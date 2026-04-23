@@ -1840,11 +1840,23 @@ std::shared_ptr<BufferHandle> RealClient::get_buffer_internal(
     allocateSlices(slices, replica, buffer_handle.ptr());
 
     // Get the object data
-    auto get_result = client_->Get(key, query_result.value(), slices);
-    if (!get_result) {
-        LOG(ERROR) << "Get failed for key: " << key
-                   << " with error: " << toString(get_result.error());
-        return nullptr;
+    if (replica.is_local_disk_replica()) {
+        std::unordered_map<std::string, Slice> slices_map;
+        slices_map.emplace(key, slices.at(0));
+        auto get_result = batch_get_into_offload_object_internal(
+            replica.get_local_disk_descriptor().transport_endpoint, slices_map);
+        if (!get_result) {
+            LOG(ERROR) << "Get failed from LOCAL_DISK for key: " << key
+                       << " with error: " << toString(get_result.error());
+            return nullptr;
+        }
+    } else {
+        auto get_result = client_->Get(key, query_result.value(), slices);
+        if (!get_result) {
+            LOG(ERROR) << "Get failed for key: " << key
+                       << " with error: " << toString(get_result.error());
+            return nullptr;
+        }
     }
 
     // Create BufferHandle with the allocated memory
@@ -2048,13 +2060,12 @@ RealClient::batch_get_buffer_internal(
     }
 
     // 1. Query metadata for all keys
-    auto query_results = client_->BatchQuery(keys);
-
-    // 2. Prepare for batch get: filter valid keys and prepare buffers
+    auto query_results = client_->BatchQuery(keys);    // 2. Prepare for batch get: filter valid keys and prepare buffers
     struct KeyOp {
         size_t original_index;
         std::string key;
         QueryResult query_result;
+        Replica::Descriptor preferred_replica;
         std::unique_ptr<BufferHandle> buffer_handle;
         std::vector<Slice> slices;
     };
@@ -2086,6 +2097,7 @@ RealClient::batch_get_buffer_internal(
             continue;
         }
         const auto &replica = res.value();
+
         uint64_t total_size = calculate_total_size(replica);
         if (total_size == 0) {
             continue;
@@ -2109,6 +2121,7 @@ RealClient::batch_get_buffer_internal(
                 KeyOp{.original_index = i,
                       .key = key,
                       .query_result = std::move(query_result_values),
+                      .preferred_replica = replica,
                       .buffer_handle = std::move(buffer_handle),
                       .slices = std::move(slices)});
         } else {
@@ -2116,6 +2129,7 @@ RealClient::batch_get_buffer_internal(
                 KeyOp{.original_index = i,
                       .key = key,
                       .query_result = std::move(query_result_values),
+                      .preferred_replica = replica,
                       .buffer_handle = std::move(buffer_handle),
                       .slices = std::move(slices)});
         }
@@ -2159,7 +2173,7 @@ RealClient::batch_get_buffer_internal(
         std::unordered_map<std::string, std::unordered_map<std::string, Slice>>
             offload_objects;
         for (const auto &op : valid_local_disk_ops) {
-            const auto &replica = op.query_result.replicas.at(0);
+            const auto &replica = op.preferred_replica;
             auto [it, _] = offload_objects.try_emplace(
                 replica.get_local_disk_descriptor().transport_endpoint);
             it->second.emplace(op.key, op.slices.at(0));
