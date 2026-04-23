@@ -2942,25 +2942,11 @@ tl::expected<Replica::Descriptor, ErrorCode> Client::GetPreferredReplica(
     if (replica_list.empty()) {
         return tl::make_unexpected(ErrorCode::INVALID_PARAMS);
     }
-
-    LOG(WARNING) << "========== GetPreferredReplica: Available replicas (" << replica_list.size() << ") ==========";
-    for (size_t i = 0; i < replica_list.size(); ++i) {
-        const auto& rep = replica_list[i];
-        if (rep.is_memory_replica()) {
-            LOG(WARNING) << "  [" << i << "] MEMORY_REPLICA (on local: " << IsReplicaOnLocalMemory(rep) << ")";
-        } else if (rep.is_local_disk_replica()) {
-            LOG(WARNING) << "  [" << i << "] LOCAL_DISK_REPLICA (endpoint: " << rep.get_local_disk_descriptor().transport_endpoint << ")";
-        } else if (rep.is_disk_replica()) {
-            LOG(WARNING) << "  [" << i << "] GLOBAL_DISK_REPLICA";
-        } else {
-            LOG(WARNING) << "  [" << i << "] UNKNOWN_REPLICA";
-        }
+    if (replica_list.size() == 1) {
+        return replica_list[0];
     }
-
     const Replica::Descriptor* remote_memory = nullptr;
     const Replica::Descriptor* local_disk = nullptr;
-    const Replica::Descriptor* global_disk = nullptr;
-
     for (const auto& rep : replica_list) {
         if (rep.is_memory_replica()) {
             // P0: Local memory is the best choice
@@ -2970,25 +2956,11 @@ tl::expected<Replica::Descriptor, ErrorCode> Client::GetPreferredReplica(
         } else if (rep.is_local_disk_replica()) {
             // P2: Record the first local disk (SSD) found
             if (!local_disk) local_disk = &rep;
-        } else if (rep.is_disk_replica()) {
-            if (!global_disk) global_disk = &rep;
         }
     }
 
     if (remote_memory) return *remote_memory;
-
-    if (local_disk) {
-        LOG(WARNING) << "===================================================";
-        LOG(WARNING) << "Selected replica is LOCAL_DISK. (修改成功，符合预期)";
-        LOG(WARNING) << "===================================================";
-        return *local_disk;
-    }
-    if (global_disk) {
-        LOG(WARNING) << "===================================================";
-        LOG(WARNING) << "Selected replica is DISK.";
-        LOG(WARNING) << "===================================================";
-        return *global_disk;
-    }
+    if (local_disk) return *local_disk;
     return replica_list[0];
 }
 
