@@ -2939,29 +2939,27 @@ tl::expected<Replica::Descriptor, ErrorCode> Client::GetPreferredReplica(
     if (replica_list.empty()) {
         return tl::make_unexpected(ErrorCode::INVALID_PARAMS);
     }
-    if (mounted_segments_.empty() || replica_list.size() == 1) {
+    if (replica_list.size() == 1) {
         return replica_list[0];
     }
 
-    std::unordered_set<std::string> local_endpoints;
-    {
-        std::lock_guard<std::mutex> lock(mounted_segments_mutex_);
-        for (const auto& [segment_id, segment] : mounted_segments_) {
-            local_endpoints.insert(segment.te_endpoint);
-        }
-    }
+    const Replica::Descriptor* remote_memory = nullptr;
+    const Replica::Descriptor* local_disk = nullptr;
 
     for (const auto& rep : replica_list) {
         if (rep.is_memory_replica()) {
-            const auto& mem_desc = rep.get_memory_descriptor();
-            const std::string& endpoint =
-                mem_desc.buffer_descriptor.transport_endpoint_;
-            if (local_endpoints.count(endpoint)) {
-                return rep;
-            }
+            // P0: Local memory is the best choice
+            if (IsReplicaOnLocalMemory(rep)) return rep;
+            // P1: Record the first remote memory found
+            if (!remote_memory) remote_memory = &rep;
+        } else if (rep.is_local_disk_replica()) {
+            // P2: Record the first local disk (SSD) found
+            if (!local_disk) local_disk = &rep;
         }
     }
 
+    if (remote_memory) return *remote_memory;
+    if (local_disk) return *local_disk;
     return replica_list[0];
 }
 
