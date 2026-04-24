@@ -52,3 +52,41 @@
     - 能够精确指出第一个不匹配字节的索引（如有）。
 - **all_processes_logs.txt**: 
     - 新增了全进程日志聚合工具，将 Master、Client 和脚本输出整合，方便全局追溯。
+
+## 6. 工程代码插桩位置 (Instrumentation Details)
+为了对 commit `b75e854` 进行闭环验证，我们在 `mooncake-store/src/real_client.cpp` 中添加了以下调试逻辑：
+
+### 6.1 副本选择调试日志
+在以下四个函数中，我们在副本决策后添加了 `has_memory`, `has_local_disk`, `has_disk` 的统计逻辑及校验日志：
+- `RealClient::get_buffer_internal` (~1820行)
+- `RealClient::batch_get_buffer_internal` (~2140行)
+- `RealClient::batch_get_into_internal` (~3350行)
+- `RealClient::batch_get_into_multi_buffers_internal` (~3710行)
+
+**插桩代码示列**:
+```cpp
+// 统计可用副本类型
+for (const auto &r : query_result_values.replicas) {
+    if (r.is_memory_replica() && r.status == ReplicaStatus::COMPLETE) has_memory = true;
+    if (r.is_local_disk_replica() && r.status == ReplicaStatus::COMPLETE) has_local_disk = true;
+    if (r.is_disk_replica() && r.status == ReplicaStatus::COMPLETE) has_disk = true;
+}
+
+// 决策路径校验
+if (!has_memory && has_local_disk && has_disk) {
+    if (replica.is_local_disk_replica()) {
+        LOG(INFO) << "[CORRECT PATH] Memory evicted, LOCAL_DISK preferred.";
+    } else {
+        LOG(ERROR) << "[WRONG PATH] Memory evicted, but LOCAL_DISK was NOT preferred.";
+    }
+}
+```
+
+### 6.2 模拟测试信号 (Mocking Signal)
+为了在只有单磁盘副本的环境下验证优先级逻辑，我们在上述函数中针对特定测试 key 强制注入了 `has_disk = true` 的假信号：
+```cpp
+if (key == "offload_stress/chunk_000" && has_local_disk) {
+    has_disk = true;
+    LOG(INFO) << "[MOCK] Forcing has_disk=true to verify priority logic.";
+}
+```

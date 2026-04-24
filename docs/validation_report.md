@@ -71,3 +71,18 @@ I20260424 16:12:16.346369 37555 real_client.cpp:3732] [CORRECT PATH] Memory evic
 - **副本选择**: 日志证实已被淘汰到 SSD 的分片在读取时，内容与写入时完全一致。
 
 **结论**: 最终确认数据在内存与 SSD 之间迁移时保持了绝对的一致性。
+
+## 8. 附录：数据生成与路径验证技术细节
+### 8.1 关键插桩点列表
+| 函数名 | 代码行 (约) | 作用 |
+| :--- | :--- | :--- |
+| `get_buffer_internal` | 1843 | 判定 LOCAL_DISK 优先级并执行 Offload 读取 |
+| `batch_get_buffer_internal` | 2151 | 批量读取下的本地磁盘决策校验 |
+| `batch_get_into_internal` | 3360 | 零拷贝路径下的副本优先权判定 |
+| `batch_get_into_multi_buffers_internal` | 3725 | 多缓冲区场景下的决策路径确认 |
+
+### 8.2 编译与环境
+验证是通过在 `real_client.cpp` 中硬编码上述调试逻辑后，执行以下命令完成的：
+1. `make install` 重新安装带桩二进制。
+2. `export MOONCAKE_OFFLOAD_FILE_STORAGE_PATH=...` 激活 SSD 路径。
+3. `python3 mooncake_verify_consistency.py` 触发插桩点。
