@@ -1,0 +1,93 @@
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I20260424 17:27:47.817361 52077 client_metric.cpp:81] Client metrics enabled (default enabled)
+I20260424 17:27:47.818496 52077 client_service.cpp:68] client_id=7946209523170331961-13943520772500186776
+I20260424 17:27:47.818514 52077 client_service.cpp:76] Client metrics enabled but reporting disabled (interval=0)
+I20260424 17:27:47.819794 52077 client_service.cpp:597] Storage root directory is: /mnt/mooncake_ssd
+I20260424 17:27:47.819813 52077 client_service.cpp:598] Fs subdir is: mooncake_cluster
+I20260424 17:27:47.819815 52077 client_service.cpp:599] Disk eviction enabled: 1
+I20260424 17:27:47.819818 52077 client_service.cpp:601] Quota bytes: 10737418240
+I20260424 17:27:47.819875 52077 storage_backend.cpp:148] Reconstructing storage state from disk at: "/mnt/mooncake_ssd/mooncake_cluster"
+I20260424 17:27:47.820746 52077 storage_backend.cpp:237] Init: Quota: 10737418240, Used: 6576668672, Available: 4160749568
+I20260424 17:27:47.820796 52077 transfer_engine_impl.cpp:757] Metrics reporting is disabled (set MC_TE_METRIC=1 to enable)
+I20260424 17:27:47.820806 52077 transfer_engine_impl.cpp:107] Transfer Engine parseHostNameWithPort. server_name: verification_node port: 12672
+I20260424 17:27:47.820829 52077 transfer_engine_impl.cpp:174] Transfer Engine RPC using P2P handshake, listening on verification_node:16567
+I20260424 17:27:47.820895 52077 client_service.cpp:440] Transfer engine auto discovery is disabled for protocol: tcp
+W20260424 17:27:47.820902 52077 client_service.cpp:475] TCP protocol does not use device names, ignoring
+E20260424 17:27:47.820917 52077 transfer_metadata.cpp:863] Local segment descriptor not found
+I20260424 17:27:47.820931 52077 tcp_transport.cpp:541] TcpTransport: listen on port 15511
+I20260424 17:27:47.821385 52077 real_client.cpp:530] Successfully created client on port 12672 after 1 attempt(s)
+I20260424 17:27:47.824052 52077 real_client.cpp:558] Registering local memory: 268435456 bytes
+I20260424 17:27:47.824105 52077 real_client.cpp:676] Global segment size is 0, skip mounting segment
+I20260424 17:27:47.824579 52077 real_client.cpp:1838] [MOCK] Forcing has_disk=true for key offload_stress/chunk_000 to verify priority logic.
+I20260424 17:27:47.824590 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_000 has_memory=1 has_local_disk=1 has_disk=1 selected=MEMORY
+I20260424 17:27:48.045532 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_001 has_memory=1 has_local_disk=1 has_disk=1 selected=MEMORY
+I20260424 17:27:48.214354 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_002 has_memory=1 has_local_disk=1 has_disk=1 selected=MEMORY
+I20260424 17:27:48.379594 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_003 has_memory=1 has_local_disk=1 has_disk=1 selected=MEMORY
+I20260424 17:27:48.543329 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_004 has_memory=1 has_local_disk=1 has_disk=1 selected=MEMORY
+I20260424 17:27:48.708915 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_005 has_memory=1 has_local_disk=1 has_disk=1 selected=MEMORY
+I20260424 17:27:48.883462 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_006 has_memory=1 has_local_disk=1 has_disk=1 selected=MEMORY
+I20260424 17:27:49.053772 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_007 has_memory=1 has_local_disk=1 has_disk=1 selected=MEMORY
+I20260424 17:27:49.220468 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_008 has_memory=1 has_local_disk=1 has_disk=1 selected=MEMORY
+I20260424 17:27:49.394542 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_009 has_memory=1 has_local_disk=1 has_disk=1 selected=MEMORY
+I20260424 17:27:49.572664 52077 real_client.cpp:1843] [CORRECT PATH] Memory evicted, LOCAL_DISK and DISK both exist. Reading from LOCAL_DISK for key: offload_stress/chunk_020
+I20260424 17:27:49.572750 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_020 has_memory=0 has_local_disk=1 has_disk=1 selected=LOCAL_DISK
+I20260424 17:27:49.730538 52077 real_client.cpp:4237] Time taken for batch_get_into_offload_object_internal: 157ms, with target_rpc_service_addr: real_client:50052, key size: 1, batch_id: 9, gc ttl: 5000ms.
+I20260424 17:27:49.833894 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_021 has_memory=1 has_local_disk=1 has_disk=1 selected=MEMORY
+I20260424 17:27:50.001955 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_022 has_memory=1 has_local_disk=1 has_disk=1 selected=MEMORY
+I20260424 17:27:50.178267 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_023 has_memory=1 has_local_disk=1 has_disk=1 selected=MEMORY
+I20260424 17:27:50.336081 52077 real_client.cpp:1843] [CORRECT PATH] Memory evicted, LOCAL_DISK and DISK both exist. Reading from LOCAL_DISK for key: offload_stress/chunk_024
+I20260424 17:27:50.336141 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_024 has_memory=0 has_local_disk=1 has_disk=1 selected=LOCAL_DISK
+I20260424 17:27:50.485270 52077 real_client.cpp:4237] Time taken for batch_get_into_offload_object_internal: 149ms, with target_rpc_service_addr: real_client:50052, key size: 1, batch_id: 10, gc ttl: 5000ms.
+I20260424 17:27:50.582784 52077 real_client.cpp:1843] [CORRECT PATH] Memory evicted, LOCAL_DISK and DISK both exist. Reading from LOCAL_DISK for key: offload_stress/chunk_025
+I20260424 17:27:50.582886 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_025 has_memory=0 has_local_disk=1 has_disk=1 selected=LOCAL_DISK
+I20260424 17:27:50.742214 52077 real_client.cpp:4237] Time taken for batch_get_into_offload_object_internal: 159ms, with target_rpc_service_addr: real_client:50052, key size: 1, batch_id: 11, gc ttl: 5000ms.
+I20260424 17:27:50.837755 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_026 has_memory=1 has_local_disk=1 has_disk=1 selected=MEMORY
+I20260424 17:27:50.993041 52077 real_client.cpp:1843] [CORRECT PATH] Memory evicted, LOCAL_DISK and DISK both exist. Reading from LOCAL_DISK for key: offload_stress/chunk_027
+I20260424 17:27:50.993131 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_027 has_memory=0 has_local_disk=1 has_disk=1 selected=LOCAL_DISK
+I20260424 17:27:51.157202 52077 real_client.cpp:4237] Time taken for batch_get_into_offload_object_internal: 164ms, with target_rpc_service_addr: real_client:50052, key size: 1, batch_id: 12, gc ttl: 5000ms.
+I20260424 17:27:51.258111 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_028 has_memory=1 has_local_disk=1 has_disk=1 selected=MEMORY
+I20260424 17:27:51.415601 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_029 has_memory=1 has_local_disk=1 has_disk=1 selected=MEMORY
+I20260424 17:27:51.580663 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_041 has_memory=1 has_local_disk=1 has_disk=1 selected=MEMORY
+I20260424 17:27:51.724934 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_042 has_memory=1 has_local_disk=1 has_disk=1 selected=MEMORY
+I20260424 17:27:51.892946 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_043 has_memory=1 has_local_disk=1 has_disk=1 selected=MEMORY
+I20260424 17:27:52.072921 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_044 has_memory=1 has_local_disk=1 has_disk=1 selected=MEMORY
+I20260424 17:27:52.275511 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_045 has_memory=1 has_local_disk=1 has_disk=1 selected=MEMORY
+I20260424 17:27:52.454807 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_046 has_memory=1 has_local_disk=1 has_disk=1 selected=MEMORY
+I20260424 17:27:52.661535 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_047 has_memory=1 has_local_disk=1 has_disk=1 selected=MEMORY
+I20260424 17:27:52.823426 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_048 has_memory=1 has_local_disk=1 has_disk=1 selected=MEMORY
+I20260424 17:27:52.992965 52077 real_client.cpp:1853] [DEBUG REPLICA] Key: offload_stress/chunk_049 has_memory=1 has_local_disk=0 has_disk=1 selected=MEMORY
+I20260424 17:27:53.177017 52077 transfer_metadata.cpp:472] removeSegmentDesc verification_node:16567 finish
+
+[+] 开始数据一致性验证 (抽样检查)...
+[*] offload_stress/chunk_000: SUCCESS (Size and Content Verified, char=A)
+[*] offload_stress/chunk_001: SUCCESS (Size and Content Verified, char=B)
+[*] offload_stress/chunk_002: SUCCESS (Size and Content Verified, char=C)
+[*] offload_stress/chunk_003: SUCCESS (Size and Content Verified, char=D)
+[*] offload_stress/chunk_004: SUCCESS (Size and Content Verified, char=E)
+[*] offload_stress/chunk_005: SUCCESS (Size and Content Verified, char=F)
+[*] offload_stress/chunk_006: SUCCESS (Size and Content Verified, char=G)
+[*] offload_stress/chunk_007: SUCCESS (Size and Content Verified, char=H)
+[*] offload_stress/chunk_008: SUCCESS (Size and Content Verified, char=I)
+[*] offload_stress/chunk_009: SUCCESS (Size and Content Verified, char=J)
+[*] offload_stress/chunk_020: SUCCESS (Size and Content Verified, char=U)
+[*] offload_stress/chunk_021: SUCCESS (Size and Content Verified, char=V)
+[*] offload_stress/chunk_022: SUCCESS (Size and Content Verified, char=W)
+[*] offload_stress/chunk_023: SUCCESS (Size and Content Verified, char=X)
+[*] offload_stress/chunk_024: SUCCESS (Size and Content Verified, char=Y)
+[*] offload_stress/chunk_025: SUCCESS (Size and Content Verified, char=Z)
+[*] offload_stress/chunk_026: SUCCESS (Size and Content Verified, char=A)
+[*] offload_stress/chunk_027: SUCCESS (Size and Content Verified, char=B)
+[*] offload_stress/chunk_028: SUCCESS (Size and Content Verified, char=C)
+[*] offload_stress/chunk_029: SUCCESS (Size and Content Verified, char=D)
+[*] offload_stress/chunk_040: FAILED (Size mismatch: expected 134217728, got 0)
+[*] offload_stress/chunk_041: SUCCESS (Size and Content Verified, char=P)
+[*] offload_stress/chunk_042: SUCCESS (Size and Content Verified, char=Q)
+[*] offload_stress/chunk_043: SUCCESS (Size and Content Verified, char=R)
+[*] offload_stress/chunk_044: SUCCESS (Size and Content Verified, char=S)
+[*] offload_stress/chunk_045: SUCCESS (Size and Content Verified, char=T)
+[*] offload_stress/chunk_046: SUCCESS (Size and Content Verified, char=U)
+[*] offload_stress/chunk_047: SUCCESS (Size and Content Verified, char=V)
+[*] offload_stress/chunk_048: SUCCESS (Size and Content Verified, char=W)
+[*] offload_stress/chunk_049: SUCCESS (Size and Content Verified, char=X)
+
+[✘] 部分分片数据一致性验证失败，请检查逻辑。
