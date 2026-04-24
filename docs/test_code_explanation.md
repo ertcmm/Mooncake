@@ -40,3 +40,15 @@
 1. 执行 `bash start_services.sh` 启动集群。
 2. 运行 `python3 mooncake_simulation.py` 填充数据并触发淘汰。
 3. 运行 `python3 mooncake_verify_consistency.py` 进行自动化一致性校验。
+
+## 5. 脚本迭代更新 (2026-04-24)
+为了应对高并发压力下的瞬时写入失败，对测试套件进行了以下升级：
+
+- **mooncake_simulation.py (v2)**: 
+    - 增加了 `while True` 重试逻辑。
+    - 能够自动处理 `-200` 错误，确保在内存淘汰完成前不会丢弃数据。
+- **mooncake_verify_consistency.py (v2)**: 
+    - 放弃了抽样检查，改为 `data != expected_data` 直接比对。
+    - 能够精确指出第一个不匹配字节的索引（如有）。
+- **all_processes_logs.txt**: 
+    - 新增了全进程日志聚合工具，将 Master、Client 和脚本输出整合，方便全局追溯。

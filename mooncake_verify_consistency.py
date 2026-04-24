@@ -8,34 +8,31 @@ except ImportError:
     print("请确保已安装 mooncake 库或设置了 PYTHONPATH")
     exit(1)
 
-def get_ptr(obj):
-    return ctypes.addressof(ctypes.c_char.from_buffer(obj))
-
-def verify_data(data, expected_char, key):
+def verify_data_full(data, expected_char, key):
     if data is None:
         print(f"[*] {key}: FAILED (Data is None)")
         return False
     
-    # 首先检查大小
     expected_size = 128 * 1024 * 1024
     if len(data) != expected_size:
         print(f"[*] {key}: FAILED (Size mismatch: expected {expected_size}, got {len(data)})")
         return False
 
-    # 检查一致性：是否全是期望的字符
-    # 为了性能，我们只采样检查开头、中间、结尾
-    samples = [0, expected_size // 2, expected_size - 1]
-    for s in samples:
-        if data[s] != expected_char:
-            print(f"[*] {key}: FAILED (Consistency mismatch at index {s}: expected {expected_char}, got {data[s]})")
-            return False
-            
-    # 全量检查 (可选，消耗 CPU)
-    # if data != bytes([expected_char]) * expected_size:
-    #     print(f"[*] {key}: FAILED (Full consistency check failed)")
-    #     return False
+    # 全量字节比对 (最慢但最严谨)
+    # 我们可以通过 memoryview 和 np.frombuffer 来加速，但这里保持简单
+    # 或者直接对比整个 bytes 对象
+    expected_data = bytes([expected_char]) * expected_size
+    if data != expected_data:
+        # 如果不匹配，找出第一个不匹配的位置
+        mismatch_idx = -1
+        for i in range(len(data)):
+            if data[i] != expected_char:
+                mismatch_idx = i
+                break
+        print(f"[*] {key}: FAILED (Content mismatch at index {mismatch_idx}: expected {expected_char}, got {data[mismatch_idx]})")
+        return False
 
-    print(f"[*] {key}: SUCCESS (Size and Content Verified, char={chr(expected_char)})")
+    print(f"[*] {key}: SUCCESS (Full Data Verified, char={chr(expected_char)})")
     return True
 
 def main():
@@ -55,26 +52,27 @@ def main():
         print(f"初始化失败: {ret}")
         return
 
-    print("\n[+] 开始数据一致性验证 (抽样检查)...")
+    print("\n[+] 开始全量数据一致性验证...")
     
-    # 验证前 10 个分片 (这些通常还在内存或刚淘汰)
-    # 验证后 10 个分片 (这些是最后写入的)
-    # 验证中间几个分片 (确保全面)
-    indices_to_check = list(range(10)) + list(range(20, 30)) + list(range(40, 50))
-    
+    NUM_CHUNKS = 50
     all_success = True
-    for i in indices_to_check:
+    for i in range(NUM_CHUNKS):
         key = f"offload_stress/chunk_{i:03d}"
         expected_char = ord('A') + (i % 26)
         
+        start = time.time()
         data = store.get(key)
-        if not verify_data(data, expected_char, key):
+        elapsed = time.time() - start
+        
+        if not verify_data_full(data, expected_char, key):
             all_success = False
+        else:
+            print(f"    (Read took {elapsed:.2f}s)")
 
     if all_success:
-        print("\n[✔] 所有检查的分片数据一致性验证通过！")
+        print("\n[✔] 所有 50 个分片的全量数据一致性验证通过！")
     else:
-        print("\n[✘] 部分分片数据一致性验证失败，请检查逻辑。")
+        print("\n[✘] 部分分片数据不一致，请检查系统逻辑。")
 
     store.close()
 
